@@ -1,3 +1,4 @@
 # test-repo
-Test repository
-I am a biologist with interest in R to develop my projects related to mammalian carnivores
+Repository for exercises
+
+Where I practice new languages and tools in small exercises
