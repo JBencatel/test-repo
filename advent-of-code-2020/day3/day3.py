@@ -54,9 +54,10 @@ Starting at the top-left corner of your map and following a slope of right 3 and
 
 import csv
 
+
 def get_dataset():
     dataset = []
-    with open("data.csv", newline = '') as csvfile:
+    with open("data.csv", newline='') as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
             dataItem = row[0]
@@ -64,11 +65,13 @@ def get_dataset():
             dataset.append(dataItem)
     return dataset
 
+
 data = get_dataset()
 
 
 def hits_tree(row, column):
     return data[row][column] == "#"
+
 
 def count_trees_hit():
     column = 0
@@ -82,6 +85,56 @@ def count_trees_hit():
             nrOfTreesHit += 1
     return nrOfTreesHit
 
-print(count_trees_hit())
+
+# print(count_trees_hit())
 
 
+"""
+--- Part Two ---
+Time to check the rest of the slopes - you need to minimize the probability of a sudden arboreal stop, after all.
+
+Determine the number of trees you would encounter if, for each of the following slopes, you start at the top-left corner and traverse the map all the way to the bottom:
+
+Right 1, down 1.
+Right 3, down 1. (This is the slope you already checked.)
+Right 5, down 1.
+Right 7, down 1.
+Right 1, down 2.
+In the above example, these slopes would find 2, 7, 3, 4, and 2 tree(s) respectively; multiplied together, these produce the answer 336.
+
+What do you get if you multiply together the number of trees encountered on each of the listed slopes?
+"""
+
+
+def count_trees_hit_with_give_slope(right, down):
+    row = 0
+    column = 0
+    nrOfTreesHit = 0
+    pathLength = len(data[0])
+    while row + down < len(data):
+        row += down
+        column += right
+        if column >= pathLength:
+            column = column % pathLength
+        if hits_tree(row, column):
+            nrOfTreesHit += 1
+    return nrOfTreesHit
+
+
+def calculate_and_multiply_hit_trees(slopes):
+    hitTreesMultiplied = 1
+    for slope in slopes:
+        hitTreesOnSlope = count_trees_hit_with_give_slope(slope[0], slope[1])
+        hitTreesMultiplied *= hitTreesOnSlope
+    return hitTreesMultiplied
+
+
+slopes = [
+    [1, 1],
+    [3, 1],
+    [5, 1],
+    [7, 1],
+    [1, 2]
+]
+
+print(calculate_and_multiply_hit_trees(slopes))
