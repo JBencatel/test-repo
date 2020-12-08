@@ -39,6 +39,7 @@ BFFFBBFRRR: row 70, column 7, seat ID 567.
 FFFBBBFRRR: row 14, column 7, seat ID 119.
 BBFFBBFRLL: row 102, column 4, seat ID 820.
 As a sanity check, look through your list of boarding passes. What is the highest seat ID on a boarding pass?
+
 """
 import csv
 
@@ -84,4 +85,42 @@ def get_highest_seat_id(listOfSeats):
     return highestSeatID
 
 
-print(get_highest_seat_id(originalSeats))
+# print(get_highest_seat_id(originalSeats))
+
+
+""" 
+--- Part Two ---
+Ding! The "fasten seat belt" signs have turned on. Time to find your seat.
+
+It's a completely full flight, so your seat should be the only missing boarding pass in your list. However, there's a catch: some of the seats at the very front and back of the plane don't exist on this aircraft, so they'll be missing from your list as well.
+
+Your seat wasn't at the very front or back, though; the seats with IDs +1 and -1 from yours will be in your list.
+
+What is the ID of your seat?
+
+"""
+
+
+def get_list_of_occupied_seats(listOfSeats):
+    listOfOccupiedSeats = []
+    for seat in listOfSeats:
+        row = get_seat_position(1, 126, 0, 7, "F", "B", seat)
+        column = get_seat_position(0, 7, 7, 10, "L", "R", seat)
+        seatID = get_seat_id(row, column)
+        listOfOccupiedSeats.append(
+            {"row": row, "column": column, "ID": seatID}
+        )
+    return sorted(listOfOccupiedSeats, key=lambda k: k['ID'])
+
+
+def get_free_seats(occupiedSeats):
+    lastSeatID = occupiedSeats[0]['ID']-1
+    for seat in occupiedSeats:
+        if seat['ID'] == lastSeatID + 2:
+            return seat['ID'] - 1
+        lastSeatID = seat['ID']
+    return 0
+
+occupiedSeats = get_list_of_occupied_seats(originalSeats)
+
+print(get_free_seats(occupiedSeats))
