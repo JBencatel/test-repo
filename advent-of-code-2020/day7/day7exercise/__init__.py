@@ -32,9 +32,59 @@ How many bag colors can eventually contain at least one shiny gold bag? (The lis
 
 """
 
+def get_rules():
+    rules = []
+    dataFile = open("../setOfRules.txt", "r")
+    for line in dataFile:
+        rules.append(line.strip())
+    dataFile.close()
+    return rules
+
 def rule_contains_given_bag(rule, bag):
     ruleInfo = rule.split('contain')
     if len(ruleInfo) > 1:
         possibleContainedBags = ruleInfo[1]
         return possibleContainedBags.find(bag) != -1
     return False
+
+
+def list_bags_that_contain_bag(rules, bag):
+    containingBags = []
+
+    for rule in rules:
+        if rule_contains_given_bag(rule, bag):
+            ruleParts = rule.split(" bags")
+            containingBag = ruleParts[0]
+            containingBags.append(containingBag)
+
+    return containingBags
+
+
+def get_parent_bags(bagsCheckedForParents, bag, rules):
+    allPossibleBags = []
+    if bag not in bagsCheckedForParents:
+        bagsCheckedForParents.append(bag)
+        possibleBags = list_bags_that_contain_bag(rules, bag)
+        allPossibleBags += possibleBags
+        for parentBag in possibleBags:
+            allPossibleBags += get_parent_bags(
+                bagsCheckedForParents, parentBag, rules)
+    return allPossibleBags
+
+
+def remove_duplicates_from_list(givenList):
+    return list(dict.fromkeys(givenList))
+
+
+def list_bags_that_eventually_contain_bag(rules, bag):
+    eventualContainerBags = get_parent_bags([], bag, rules)
+    return remove_duplicates_from_list(eventualContainerBags)
+
+
+def get_number_eventual_container_bags(bag):
+    rules = get_rules()
+    eventualContainerBags = list_bags_that_eventually_contain_bag(rules, bag)
+    return len(eventualContainerBags)
+
+
+print(get_number_eventual_container_bags("shiny gold"))
